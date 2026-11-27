@@ -17,6 +17,7 @@
 #include "patches/arm7/sdk5/Sdk5DsiSdCardRedirectPatch.h"
 #include "patches/arm7/PokemonDownloaderArm7Patch.h"
 #include "patches/arm7/cheats/CheatEnginePatch.h"
+#include "patches/arm7/wifi/WlProxyPatch.h"
 #include "Arm7Patcher.h"
 
 static u32 correctAddress(u32 address, const nds_header_ntr_t* romHeader)
@@ -106,6 +107,24 @@ void* Arm7Patcher::ApplyPatches(const LoaderPlatform* loaderPlatform, u32 cheats
             cheatsPtr = cheats;
             patchCollection.AddPatch(new CheatEnginePatch(cheats));
             mainMemoryArenaLo += cheatsLength;
+        }
+
+        if (loaderPlatform->HasNetworkLink() && WlProxyBlob::Get())
+        {
+            // In main memory: the arm7 VRAM that holds WM is restored from a saved
+            // copy each time wireless starts, which would wipe the proxy.
+            u32 proxyBase = (mainMemoryArenaLo + 31) & ~31u;
+            auto wlProxyPatch = new WlProxyPatch(WlProxyBlob::Get(),
+                (void*)correctAddress(proxyBase, romHeader));
+            if (wlProxyPatch->Locate(romHeader))
+            {
+                patchCollection.AddPatch(wlProxyPatch);
+                mainMemoryArenaLo = proxyBase + wlProxyPatch->GetSize();
+            }
+            else
+            {
+                delete wlProxyPatch;
+            }
         }
 
         if (romHeader->unitCode == 0) // seems only present on NITRO, not on HYBRID or LIMITED

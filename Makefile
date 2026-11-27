@@ -8,7 +8,7 @@ checklibtwl:
 	$(MAKE) -C libs/libtwl
 
 loader9: checklibtwl
-	$(MAKE) -f Makefile.arm9 PLATFORM=$(PICO_PLATFORM)
+	$(MAKE) -f Makefile.arm9 PLATFORM=$(PICO_PLATFORM) WLPROXY=$(WLPROXY)
 
 loader7: checklibtwl
 	$(MAKE) -f Makefile.arm7

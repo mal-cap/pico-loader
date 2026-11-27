@@ -45,4 +45,8 @@ public:
     LoaderPlatformType GetPlatformType() const override { return LoaderPlatformType::Slot1; }
 
     bool HasDmaSdReads() const override { return true; }
+
+    // Card commands EC-EF; needs a firmware with network mode (stock firmware stops
+    // answering the card after an unknown command).
+    bool HasNetworkLink() const override { return true; }
 };

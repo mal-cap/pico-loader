@@ -26,4 +26,7 @@ public:
     }
 
     LoaderPlatformType GetPlatformType() const override { return LoaderPlatformType::Slot1; }
+
+    // For melonDS builds that emulate the DSpico network commands.
+    bool HasNetworkLink() const override { return true; }
 };

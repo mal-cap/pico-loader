@@ -25,6 +25,9 @@ AUDIODIRS	:=
 PLATFORM	?= DSPICO
 
 DEFINES		:= -DLIBTWL_ARM9 -DARM9 -DPICO_LOADER_TARGET_$(PLATFORM)
+ifeq ($(WLPROXY),1)
+    DEFINES	+= -DPICO_LOADER_WLPROXY
+endif
 
 # Libraries
 # ---------
@@ -103,6 +106,9 @@ endif
 
 INCLUDEFLAGS	:= $(foreach path,$(INCLUDEDIRS),-I$(path)) \
 		   $(foreach path,$(LIBDIRS),-I$(path)/include)
+ifeq ($(WLPROXY),1)
+    INCLUDEFLAGS	+= -I$(abspath $(BUILDDIR)/wlproxy)
+endif
 
 LIBDIRSFLAGS	:= $(foreach path,$(LIBDIRS),-L$(path)/lib)
 
@@ -231,6 +237,22 @@ $(SOUNDBANKDIR)/soundbank.c.o: $(SOUNDBANKDIR)/soundbank.h
 	@echo "  CC.9    soundbank_bin.c"
 	$(V)$(CC) $(CFLAGS) -MMD -MP -c -o $(SOUNDBANKDIR)/soundbank.c.o \
 		$(SOUNDBANKDIR)/soundbank_bin.c
+
+# Wi-Fi proxy (WLPROXY=1): the arm7 proxy is built for this platform and embedded
+# --------------------------------------------------------------------------------
+
+WLPROXY_BUILD	:= $(abspath $(BUILDDIR)/wlproxy)
+WLPROXY_HEADER	:= $(WLPROXY_BUILD)/wlproxy_blob.h
+
+ifeq ($(WLPROXY),1)
+$(BUILDDIR)/arm9/source/patches/arm7/wifi/WlProxyBlob.cpp.o: $(WLPROXY_HEADER)
+endif
+
+.PHONY: wlproxy_force
+$(WLPROXY_HEADER): wlproxy_force
+	@echo "  WLPROXY $(PLATFORM)"
+	$(V)$(MAKE) --no-print-directory -C wlproxy header B=$(WLPROXY_BUILD) \
+		CROSS=$(PREFIX) $(if $(filter MELONDS,$(PLATFORM)),EXTRA_CFLAGS=-DPROXY_DEBUG_MELONDS=1)
 
 # All assets must be built before the source code
 # -----------------------------------------------

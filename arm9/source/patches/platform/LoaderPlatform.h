@@ -58,4 +58,8 @@ public:
     /// @brief For platforms that need it this function may be used to (re)initialize the sd card.
     /// @return True if the sd card initialization was successful, or false otherwise.
     virtual bool InitializeSdCard() { return true; }
+
+    /// @brief Returns whether the platform has a network link the Wi-Fi proxy can use.
+    /// @return True if it has, or false otherwise.
+    virtual bool HasNetworkLink() const { return false; }
 };
