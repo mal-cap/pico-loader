@@ -18,6 +18,7 @@
 #include "patches/arm7/PokemonDownloaderArm7Patch.h"
 #include "patches/arm7/cheats/CheatEnginePatch.h"
 #include "patches/arm7/wifi/WlProxyPatch.h"
+#include "../../include/picoLoader7.h"
 #include "Arm7Patcher.h"
 
 static u32 correctAddress(u32 address, const nds_header_ntr_t* romHeader)
@@ -32,7 +33,7 @@ static u32 correctAddress(u32 address, const nds_header_ntr_t* romHeader)
     }
 }
 
-void* Arm7Patcher::ApplyPatches(const LoaderPlatform* loaderPlatform, u32 cheatsLength,
+void* Arm7Patcher::ApplyPatches(const LoaderPlatform* loaderPlatform, u32 cheatsLength, u32 loaderFlags,
     void*& cheatsPtr, char*& bannerSavePathPtr, bool runInDSiMode) const
 {
     cheatsPtr = nullptr;
@@ -109,7 +110,7 @@ void* Arm7Patcher::ApplyPatches(const LoaderPlatform* loaderPlatform, u32 cheats
             mainMemoryArenaLo += cheatsLength;
         }
 
-        if (loaderPlatform->HasNetworkLink() && WlProxyBlob::Get())
+        if ((loaderFlags & PLOAD_FLAG_WIFI_PROXY) && loaderPlatform->HasNetworkLink() && WlProxyBlob::Get())
         {
             // In main memory: the arm7 VRAM that holds WM is restored from a saved
             // copy each time wireless starts, which would wipe the proxy.

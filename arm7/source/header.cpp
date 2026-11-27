@@ -10,5 +10,8 @@ extern u8 __bss_size[];
 pload_header7_t gLoaderHeader
 {
     .entryPoint = (void*)&_start,
-    .apiVersion = PICO_LOADER_API_VERSION
+    .apiVersion = PICO_LOADER_API_VERSION,
+#ifdef PICO_LOADER_WLPROXY_DEFAULT_ON
+    .v4 = { .flags = PLOAD_FLAG_WIFI_PROXY }
+#endif
 };

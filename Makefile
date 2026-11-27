@@ -11,7 +11,7 @@ loader9: checklibtwl
 	$(MAKE) -f Makefile.arm9 PLATFORM=$(PICO_PLATFORM) WLPROXY=$(WLPROXY)
 
 loader7: checklibtwl
-	$(MAKE) -f Makefile.arm7
+	$(MAKE) -f Makefile.arm7 WLPROXY=$(WLPROXY)
 
 picoLoaderConverter:
 	dotnet build tools/PicoLoaderConverter/PicoLoaderConverter.sln

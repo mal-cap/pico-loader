@@ -21,6 +21,11 @@ BINDIRS		:=
 # ---------------------------
 
 DEFINES		:= -DLIBTWL_ARM7 -DARM7
+# WLPROXY=1: the header in picoLoader7.bin asks for the Wi-Fi proxy unless the
+# launcher clears PLOAD_FLAG_WIFI_PROXY.
+ifeq ($(WLPROXY),1)
+    DEFINES	+= -DPICO_LOADER_WLPROXY_DEFAULT_ON
+endif
 
 # Libraries
 # ---------
